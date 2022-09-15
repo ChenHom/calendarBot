@@ -23,7 +23,7 @@ class LineBotController extends Controller
 
         foreach ($bot->parseEventRequest($body, $request->header(HTTPHeader::LINE_SIGNATURE)) as $event) {
             if ($event instanceof TextMessage) {
-                Log::info($event->getUserId(), $event->getText());
+                Log::info([$event->getUserId(), $event->getText()]);
                 $bot->pushMessage($event->getUserId(), new TextMessageBuilder($event->getText()));
             }
         }

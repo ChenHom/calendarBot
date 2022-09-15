@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use LINE\LINEBot\Constant\HTTPHeader;
 use LINE\LINEBot\Event\MessageEvent\TextMessage;
 use LINE\LINEBot\HTTPClient\CurlHTTPClient;
@@ -17,12 +18,12 @@ class LineBotController extends Controller
 
         $client = new CurlHTTPClient($lineBotConfig['channel_id']);
         $bot = new \LINE\LINEBot($client, ['channelSecret' => $lineBotConfig['channel_secret']]);
-        $signature = $request->header(HTTPHeader::LINE_SIGNATURE);
 
         $body = $request->getContent();
 
-        foreach ($bot->parseEventRequest($body, $signature) as $event) {
+        foreach ($bot->parseEventRequest($body, $request->header(HTTPHeader::LINE_SIGNATURE)) as $event) {
             if ($event instanceof TextMessage) {
+                Log::info($event->getUserId(), $event->getText());
                 $bot->pushMessage($event->getUserId(), new TextMessageBuilder($event->getText()));
             }
         }

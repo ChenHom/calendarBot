@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use LINE\LINEBot\Constant\HTTPHeader;
 use LINE\LINEBot\Event\MessageEvent\TextMessage;
+use LINE\LINEBot\Event\PostbackEvent;
 use LINE\LINEBot\HTTPClient\CurlHTTPClient;
 use LINE\LINEBot\MessageBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ButtonTemplateBuilder;
@@ -24,14 +25,17 @@ class LineBotController extends Controller
 
         foreach ($bot->parseEventRequest($request->getContent(), $request->header(HTTPHeader::LINE_SIGNATURE)) as $event) {
             $replyToken = $event->getReplyToken();
-            Log::info([$event->getText()]);
             if ($event instanceof TextMessage) {
+                Log::info([$event->getText()]);
                 $bot->replyMessage($replyToken, new TemplateMessageBuilder(
                     '選擇',
                     new ButtonTemplateBuilder('行事曆', '文字', actionBuilders: [
                         new DatetimePickerTemplateActionBuilder('選擇時間', 'storeId=12345', 'datetime')
                     ])
                 ));
+            }
+            if ($event instanceof PostbackEvent) {
+                Log::info([$event->getPostbackData(), $event->getPostbackParams()]);
             }
         }
     }

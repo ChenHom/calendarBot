@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LineBotController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,4 +15,4 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::match(['get', 'post'], '/line/callback', [LineBot]);
+Route::match(['get', 'post'], '/line/callback', [LineBotController::class, 'index']);

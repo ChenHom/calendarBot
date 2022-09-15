@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use LINE\LINEBot\Constant\HTTPHeader;
 use LINE\LINEBot\Event\MessageEvent\TextMessage;
 use LINE\LINEBot\HTTPClient\CurlHTTPClient;
+use LINE\LINEBot\MessageBuilder;
+use LINE\LINEBot\MessageBuilder\TextMessageBuilder;
 
 class LineBotController extends Controller
 {
@@ -21,7 +23,7 @@ class LineBotController extends Controller
 
         foreach ($bot->parseEventRequest($body, $signature) as $event) {
             if ($event instanceof TextMessage) {
-                $bot->replyText($event->getReplyToken(), $event->getText());
+                $bot->pushMessage($event->getUserId(), new TextMessageBuilder($event->getText()));
             }
         }
     }

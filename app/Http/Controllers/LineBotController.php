@@ -22,11 +22,10 @@ class LineBotController extends Controller
         $client = new CurlHTTPClient($lineBotConfig['channel_access_token']);
         $bot = new \LINE\LINEBot($client, ['channelSecret' => $lineBotConfig['channel_secret']]);
 
-        $body = $request->getContent();
-        foreach ($bot->parseEventRequest($body, $request->header(HTTPHeader::LINE_SIGNATURE)) as $event) {
+        foreach ($bot->parseEventRequest($request->getContent(), $request->header(HTTPHeader::LINE_SIGNATURE)) as $event) {
             $replyToken = $event->getReplyToken();
+            Log::info([$event->getText()]);
             if ($event instanceof TextMessage) {
-                Log::info([$event->getText()]);
                 $bot->replyMessage($replyToken, new TemplateMessageBuilder(
                     '選擇',
                     new ButtonTemplateBuilder('行事曆', '文字', actionBuilders: [

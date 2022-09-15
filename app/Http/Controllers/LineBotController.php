@@ -8,7 +8,10 @@ use LINE\LINEBot\Constant\HTTPHeader;
 use LINE\LINEBot\Event\MessageEvent\TextMessage;
 use LINE\LINEBot\HTTPClient\CurlHTTPClient;
 use LINE\LINEBot\MessageBuilder;
+use LINE\LINEBot\MessageBuilder\TemplateBuilder\ButtonTemplateBuilder;
+use LINE\LINEBot\MessageBuilder\TemplateMessageBuilder;
 use LINE\LINEBot\MessageBuilder\TextMessageBuilder;
+use LINE\LINEBot\TemplateActionBuilder\DatetimePickerTemplateActionBuilder;
 
 class LineBotController extends Controller
 {
@@ -20,11 +23,18 @@ class LineBotController extends Controller
         $bot = new \LINE\LINEBot($client, ['channelSecret' => $lineBotConfig['channel_secret']]);
 
         $body = $request->getContent();
-
         foreach ($bot->parseEventRequest($body, $request->header(HTTPHeader::LINE_SIGNATURE)) as $event) {
+            $replyToken = $event->getReplyToken();
             if ($event instanceof TextMessage) {
-                Log::info([$event->getUserId(), $event->getText()]);
-                $bot->pushMessage($event->getUserId(), new TextMessageBuilder($event->getText()));
+                Log::info([$event->getText()]);
+                $bot->replyMessage($replyToken, new TextMessageBuilder($event->getText()));
+
+                $bot->replyMessage($replyToken, new TemplateMessageBuilder(
+                    '選擇',
+                    new ButtonTemplateBuilder('行事曆', '文字', actionBuilders: [
+                        new DatetimePickerTemplateActionBuilder('選擇時間', 'storeId=12345', 'datetime')
+                    ])
+                ));
             }
         }
     }

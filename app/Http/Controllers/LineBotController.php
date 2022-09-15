@@ -27,8 +27,6 @@ class LineBotController extends Controller
             $replyToken = $event->getReplyToken();
             if ($event instanceof TextMessage) {
                 Log::info([$event->getText()]);
-                $bot->replyMessage($replyToken, new TextMessageBuilder($event->getText()));
-
                 $bot->replyMessage($replyToken, new TemplateMessageBuilder(
                     '選擇',
                     new ButtonTemplateBuilder('行事曆', '文字', actionBuilders: [

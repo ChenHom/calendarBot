@@ -26,15 +26,15 @@ class LineBotController extends Controller
         foreach ($bot->parseEventRequest($body, $request->header(HTTPHeader::LINE_SIGNATURE)) as $event) {
             $replyToken = $event->getReplyToken();
             if ($event instanceof TextMessage) {
-                Log::info([$event->getText()]);
-                $bot->replyMessage($replyToken, new TextMessageBuilder($event->getText()));
+                Log::info([$event->getText(), $replyToken]);
+                // $bot->replyMessage($replyToken, new TextMessageBuilder($event->getText()));
 
-                $bot->replyMessage($replyToken, new TemplateMessageBuilder(
-                    '選擇',
-                    new ButtonTemplateBuilder('行事曆', '文字', actionBuilders: [
-                        new DatetimePickerTemplateActionBuilder('選擇時間', 'storeId=12345', 'datetime')
-                    ])
-                ));
+                // $bot->replyMessage($replyToken, new TemplateMessageBuilder(
+                //     '選擇',
+                //     new ButtonTemplateBuilder('行事曆', '文字', actionBuilders: [
+                //         new DatetimePickerTemplateActionBuilder('選擇時間', 'storeId=12345', 'datetime')
+                //     ])
+                // ));
             }
         }
     }
